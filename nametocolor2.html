@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name to Color</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #0d0d0d 50%, #0d0d0d 50%); /* Initial gradient */
+            transition: background 0.5s ease; /* Smooth background transition */
+            background-attachment: fixed; /* Keep the background fixed in place */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+            background-repeat: no-repeat; /* Prevent background from repeating */
+        }
+        h1, p {
+            color: white; /* Always white text color */
+        }
+        h1 {
+            font-family: 'Impact', sans-serif; /* Impact font for the title */
+        }
+        p {
+            font-weight: bold; /* Make the text bold */
+        }
+        .result-container {
+            display: inline-block;
+            margin: 10px;
+        }
+        .result-container label {
+            display: block;
+            font-weight: bold; /* Make the label text bold */
+            margin-bottom: 5px;
+        }
+        input, #result-box, #hex-box {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            width: 300px;
+            text-align: center;
+            border: 3px solid black; /* Moderately thick stroke */
+            border-radius: 5px; /* Rounded corners for a cleaner look */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Name to Color</h1>
+    <input type="text" id="word1" placeholder="First word" maxlength="20">
+    <input type="text" id="word2" placeholder="Second word" maxlength="20">
+    <input type="text" id="word3" placeholder="Third word" maxlength="20">
+    <br>
+    <button onclick="calculateValues()">Calculate</button>
+    <br>
+    <div class="result-container">
+        <label for="result-box">RGB</label>
+        <input type="text" id="result-box" readonly placeholder="RGB">
+    </div>
+    <div class="result-container">
+        <label for="hex-box">HEX</label>
+        <input type="text" id="hex-box" readonly placeholder="Hex">
+    </div>
+
+    <script>
+        function calculateValues() {
+            const words = [
+                document.getElementById('word1').value.toLowerCase(),
+                document.getElementById('word2').value.toLowerCase(),
+                document.getElementById('word3').value.toLowerCase()
+            ];
+
+            let results = words.map(word => {
+                let sum = 0;
+                for (let i = 0; i < word.length; i++) {
+                    let char = word[i];
+                    let charCode = word.charCodeAt(i);
+
+                    if (char === 'ñ') {
+                        sum += 15; // Assign 15 to ñ
+                    } else if (charCode >= 97 && charCode <= 122) { // Check if it's a lowercase letter a-z
+                        sum += charCode - 96;
+                    }
+                }
+                return sum * 4;
+            });
+
+            results = results.map(result => {
+                while (result > 255) {
+                    result -= 256;
+                }
+                return result;
+            });
+
+            // Display the results as numbers separated by commas
+            const rgbString = results.join(', ');
+            document.getElementById('result-box').value = rgbString;
+
+            // Convert to hex and change the background gradient
+            const hexColor = rgbToHex(results[0], results[1], results[2]);
+            document.getElementById('hex-box').value = hexColor;
+            document.body.style.background = `linear-gradient(to bottom, #0d0d0d 50%,${hexColor} 100%)`;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        function componentToHex(c) {
+            const hex = c.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }
+    </script>
+</body>
+</html>
+</html>
